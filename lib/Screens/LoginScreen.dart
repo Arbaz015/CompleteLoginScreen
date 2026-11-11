@@ -8,8 +8,16 @@ class LoginScreen extends StatefulWidget{
 
 class _LoginScreen extends State<LoginScreen>{
 
-  final emailReExp= RegExp(  r'^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$'
-);
+    bool isLoading=false;
+
+  final emailReExp= RegExp(  r'^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,}$');
+  final upprChar=RegExp(r'[A-Z]');
+  final lowerChar=RegExp(r'[a-z]');
+  final numberChar=RegExp(r'[0-9]');
+  
+
+  int passLength=8;
+
 
    @override
   void dispose() {
@@ -74,6 +82,20 @@ child: TextFormField(
      if(value ==null || value.isEmpty){
           return 'password is incorrect';
      }  
+     if(value.length<passLength)
+     {
+      return'passowrd should be 8';
+     } 
+     if(!numberChar.hasMatch(value)){
+        return 'password must contain a number';
+     }
+     if(!upprChar.hasMatch(value)){
+      return 'password must contain an uppercase letter';
+     }if (!lowerChar.hasMatch(value)){
+      return 'password must contain lowercase';
+     }
+     
+
      return null;
   },
   decoration: InputDecoration(  
@@ -92,12 +114,15 @@ child: TextFormField(
   onChanged: (value) => setState(() {}),
 ),),
 SizedBox(height: 20,),
-ElevatedButton(onPressed: (){
+ElevatedButton(onPressed:  isLoading ? null:(){
 
   if (_formKey.currentState!.validate()){
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Check the fields')));
+    setState(() {
+      isLoading=true;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('validation successful')));
   }
-}, child: Text('Login'),style:ElevatedButton.styleFrom(
+},    child: isLoading ? CircularProgressIndicator(backgroundColor: Colors.grey[2000],color: Colors.blue,strokeWidth: 3.0,): Text('Login'),style:ElevatedButton.styleFrom(
   backgroundColor: Colors.blueAccent,
   foregroundColor: Colors.white,
   textStyle: TextStyle(fontSize: 16,fontFamily:'Montserrat',fontWeight: FontWeight.bold,fontStyle: FontStyle.italic )
